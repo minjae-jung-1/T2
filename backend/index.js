@@ -17,7 +17,11 @@ app.use(cors({
 
 const io = socket()
 
+io.set("origins", "*:*")
 
+io.on("connection", (socket) => {
+    console.log("user connected :)");
+})
 
 
 app.listen(port, () => console.log(`server listening on port: ${port}`));
