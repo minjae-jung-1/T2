@@ -15,7 +15,11 @@ app.use(cors({
     "methods": ["GET", "POST"]
 }));
 
-const io = socket(app)
+const server = require("http").createServer(app);
+
+
+
+const io = socket(server)
 
 io.set("origins", "*:*")
 
@@ -24,4 +28,4 @@ io.on("connection", (socket) => {
 })
 
 
-app.listen(port, () => console.log(`server listening on port: ${port}`));
+server.listen(port, () => console.log(`server listening on port: ${port}`));
