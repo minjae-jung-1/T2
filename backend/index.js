@@ -15,7 +15,7 @@ app.use(cors({
     "methods": ["GET", "POST"]
 }));
 
-const io = socket()
+const io = socket(app)
 
 io.set("origins", "*:*")
 
