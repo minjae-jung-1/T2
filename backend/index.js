@@ -10,9 +10,9 @@ const app = express();
 app.use(bodyParser.json())
 
 app.use(cors({
-    "origin": ["https://localhost:8080"],
+    "origin": ["http://localhost:5500"],
     "credentials": true,
-    "methods": ["GET", "POST"]
+    "methods": ["GET", "POST", "OPTIONS"]
 }));
 
 const io = socket()
@@ -24,4 +24,4 @@ io.on("connection", (socket) => {
 })
 
 
-app.listen(port, () => console.log(`server listening on port: ${port}`));
+app.listen(`${port}`, () => console.log(`server listening on port: ${port}`));
