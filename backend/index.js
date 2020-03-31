@@ -4,17 +4,20 @@ const cors = require("cors");
 const socket = require("socket.io");
 const port = 3000;
 const bodyParser = require("body-parser");
-const mysql = require("mysql");
+const mongoose = require("mongoose");
+const db_pass = process.env.DB_PASS;
+const url = `mongodb://chatRoyale:${db_pass}@18.221.11.205:27017`;
+const cookieParser = require("cookie-parser");
 
-const db = mysql.createConnection({
-    host: "18.221.11.205"
-}) 
+mongoose.Promise = global.Promise;
+mongoose.connect(url, {useNewUrlParser:true, useUnifiedTopology: true});
+
 
 
 const app = express();
 
-app.use(bodyParser.json())
-
+app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(cors({
     "origin": ["http://localhost:5500"],
     "credentials": true,
@@ -24,7 +27,10 @@ app.use(cors({
 const server = require("http").createServer(app);
 
 const queue = {
-    league: 0
+    league: 0,
+    csgo: {
+
+    }
 }
 
 
@@ -40,6 +46,12 @@ io.on("connection", (socket) => {
         console.log(queue.league)
     })
 })
+
+
+const users = require("./routes/users");
+app.use("/api/users", users)
+
+
 
 
 server.listen(port, () => console.log(`server listening on port: ${port}`));
