@@ -1,8 +1,14 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const socket = require("socket.io");
 const port = 3000;
 const bodyParser = require("body-parser");
+const mysql = require("mysql");
+
+const db = mysql.createConnection({
+    host: "18.221.11.205"
+}) 
 
 
 const app = express();
@@ -16,6 +22,7 @@ app.use(cors({
 }));
 
 const server = require("http").createServer(app);
+
 
 
 
