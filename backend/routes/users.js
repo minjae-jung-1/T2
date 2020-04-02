@@ -23,6 +23,8 @@ router.route("/signup")
 router.route("/signin")
     .post(passport.authenticate("local", { session: false }), UsersController.signIn);
 
+
+    //TODO REWRITE THIS :)
 router.get("/details", async (req, res) => {
     // TODO:  Use projection instead of doing this jank ass shit
     let userId = req.query.userId;

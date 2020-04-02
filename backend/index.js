@@ -43,15 +43,33 @@ const io = socket(server)
 io.set("origins", "*:*")
 
 io.on("connection", (socket) => {
-    console.log("user connected :)");
-    socket.on("queueLeague", (data)=>{
-        console.log("nice queue league")
+    socket.emit("queueStatus", {
+        queue
+    });
+
+    socket.on("queueLeague", (data) => {
         console.log(data);
         if (!queue.league.playerIds.includes(data.user._id)){
             queue.league.playerCount++;
             queue.league.playerIds.push(data.user._id);
+            socket.emit("playerJoined", queue);
         }
-        console.log(queue.league)
+    })
+
+    socket.on("queueCsgo", (data) => {
+        console.log(data);
+        if (!queue.csgo.playerIds.includes(data.user._id)){
+            queue.csgo.playerCount++;
+            queue.csgo.playerIds.push(data.user._id);
+            socket.emit("playerJoined", queue);
+        }
+    })
+
+    socket.on("SEND_MESSAGE", (data) => {
+        console.log(data);
+        socket.broadcast.emit("MESSAGE", {
+            data
+        })
     })
 })
 

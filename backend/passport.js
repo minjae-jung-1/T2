@@ -34,7 +34,7 @@ passport.use(new LocalStrategy({
  }, async (email, password, done) => {
     try {
     //find the user given the email 
-    const user = await User.findOne({
+    let user = await User.findOne({
         email
     });
     //if not, handle it
@@ -47,7 +47,9 @@ passport.use(new LocalStrategy({
     if (!isMatch) {
         return done(null, false);
     }
-
+    user = user.toObject();
+    // delete the password :)
+    delete user.password;
     // otherwise return the user
     done(null, user);
     } catch (error) {

@@ -17,7 +17,7 @@ module.exports = {
         console.log("TriggeredDDD");
         const {email, password} = req.body;
 
-        const foundUser = await User.findOne({"email": email})
+        const foundUser = await User.findOne({"email": email}).select("username email _id");
 
         if (foundUser) {
             return res.status(403).send({
@@ -34,7 +34,7 @@ module.exports = {
         await newUser.save();
         
         const token = signToken(newUser);
-        res.status(200).json({ token });
+        res.cookie("token", token).send(newUser);
 
     },
     signIn: async (req, res, next) => {
