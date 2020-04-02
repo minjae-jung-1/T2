@@ -2,10 +2,10 @@
   <div class="container">
             <div class="row">
               <div class="col-sm center-page text-center">
-                <button @click="queueCsgo()">CS <span v-if="queue && queue.csgo" class="badge badge-dark ml-2">{{ queue.csgo.playerCount }}</span></button>
+                <button @click="queueCsgo()" class="btn btn-secondary">CS <span v-if="queue && queue.csgo" class="badge badge-dark ml-2">{{ queue.csgo.playerCount }}</span></button>
               </div>
               <div class="col-sm center-page text-center">
-                <button @click="queueLeague()">league<span v-if="queue.league" class="badge badge-dark ml-2">{{ queue.league.playerCount }}</span></button>
+                <button @click="queueLeague()" class="btn btn-secondary">league<span v-if="queue.league" class="badge badge-dark ml-2">{{ queue.league.playerCount }}</span></button>
               </div>
             </div>
       <chat-comp/>
