@@ -27,9 +27,13 @@ app.use(cors({
 const server = require("http").createServer(app);
 
 const queue = {
-    league: 0,
+    league: {
+        playerCount: 0,
+        playerIds: []
+    },
     csgo: {
-
+        playerCount: 0,
+        playerIds: []
     }
 }
 
@@ -41,8 +45,12 @@ io.set("origins", "*:*")
 io.on("connection", (socket) => {
     console.log("user connected :)");
     socket.on("queueLeague", (data)=>{
-        console.log("nice queu laeuge")
-        queue.league++
+        console.log("nice queue league")
+        console.log(data);
+        if (!queue.league.playerIds.includes(data.user._id)){
+            queue.league.playerCount++;
+            queue.league.playerIds.push(data.user._id);
+        }
         console.log(queue.league)
     })
 })

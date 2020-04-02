@@ -23,9 +23,9 @@ export default {
     },
     methods: {
       queueLeague() {
-        console.log("here");
-        this.socket.emit("queueLeague", () => {
-
+        let user = JSON.parse(sessionStorage.getItem("userData"));
+        this.socket.emit("queueLeague", {
+          user
         })
       }
     }
