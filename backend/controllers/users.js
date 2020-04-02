@@ -38,9 +38,10 @@ module.exports = {
 
     },
     signIn: async (req, res, next) => {
+        console.log("is anything fucking happening")
         // generate token
         const token = signToken(req.user);
-        res.cookie("token", token).send("successful"); 
+        res.cookie("token", token).send(req.user); 
     },
     facebookOAUTH: async (req, res, next) => {
         // Generate token

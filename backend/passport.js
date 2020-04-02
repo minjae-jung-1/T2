@@ -32,7 +32,6 @@ const LocalStrategy = require("passport-local").Strategy;
 passport.use(new LocalStrategy({
     usernameField: "email"
  }, async (email, password, done) => {
-    
     try {
     //find the user given the email 
     const user = await User.findOne({
