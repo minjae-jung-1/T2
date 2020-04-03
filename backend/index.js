@@ -9,6 +9,9 @@ const db_pass = process.env.DB_PASS;
 const url = `mongodb://chatRoyale:${db_pass}@18.221.11.205:27017`;
 const cookieParser = require("cookie-parser");
 
+// TODO configure multer like 4bran
+// TODO generate certs and setup HTTPS and serve up HTML from build folder as static pages
+
 mongoose.Promise = global.Promise;
 mongoose.connect(url, {useNewUrlParser:true, useUnifiedTopology: true});
 
@@ -58,10 +61,18 @@ io.on("connection", (socket) => {
 
     socket.on("queueCsgo", (data) => {
         console.log(data);
-        if (!queue.csgo.playerIds.includes(data.user._id)){
+        // re-enable the "duplicate check"
+        // if (!queue.csgo.playerIds.includes(data.user._id)){
             queue.csgo.playerCount++;
             queue.csgo.playerIds.push(data.user._id);
             socket.emit("playerJoined", queue);
+        //}
+
+        if (queue.csgo.playerCount === 10) {
+            console.log("TRIG GGERERRREDDD ON BACK END ")
+            let lobby = {};
+            lobby["players"] = queue.csgo.playerIds.slice(0, 10);
+            socket.emit("csgoMatchFound", lobby)
         }
     })
 

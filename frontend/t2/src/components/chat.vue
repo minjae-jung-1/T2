@@ -6,7 +6,6 @@
         <div id="chat">
         <div v-for="(msg, index) in messages" :key="index">
             <div class="line" >
-            <img src="../assets/pepe2.png" alt="Avatar">
             <div>{{msg.username}}:  {{msg.message}} </div>
             </div>
         </div>
@@ -15,7 +14,6 @@
         <input v-model="message" @keydown.enter="sendMessage()" type="text/submit" id="chatInput" value="test" >
         <button type="submit" @click="sendMessage()" id="send" class="btn btn-primary">Send</button>
         </form>
-
 </div>
     
 </template>
@@ -24,11 +22,14 @@
 
 
 <script>
+//TODO Multer to download people's profile pictures on the backend and serve it up via a static folder.
+
 import io from 'socket.io-client';
 export default {
   name: 'chatComp',
   data() {
       return {
+          userDetails: JSON.parse(sessionStorage.getItem("userData")),
           user: 'BRAN',
           message: '',
           messages: [],
@@ -39,10 +40,12 @@ export default {
       sendMessage(){
         console.log(this.message.length)
         if(this.message.replace(/\s/g, '').length) {
-          this.socket.emit('SEND_MESSAGE', {
-              message: this.message,
-              username: "branTest"
-          });
+          let newMessage = {
+            "username": this.userDetails.username,
+            "message": this.message
+          }
+          this.messages.push(newMessage)
+          this.socket.emit('SEND_MESSAGE', newMessage);
           this.message = ''
         }
       },
