@@ -21,7 +21,6 @@ var certificate = fs.readFileSync("./certs/public.pem");
 
 const credentials = { key: privateKey, cert: certificate }
 
-
 const app = express();
 
 app.use(bodyParser.json());
@@ -66,12 +65,22 @@ io.on("connection", (socket) => {
     socket.emit("queueStatus", queue);
 
     socket.on("joinUsers", (data) => {
-      queue.users.push(data)  
+      if(!queue.users.find(user => user._id === data._id)) {
+        let user = data;
+        user.status = "Online"
+        queue.users.push(user)
+      }
+      socket.emit("playerJoined", queue)
     })
 
     socket.on("queueLeague", (data) => {
         console.log(data);
-        if (!queue.league.playerIds.includes(data.user._id)){
+        if (!queue.league.playerIds.includes(data.user._id)) {
+            queue.users.forEach((user) => {
+                if (user._id === data.user._id) {
+                    user.status = "In Queue";
+                } 
+            })
             queue.league.playerCount++;
             queue.league.playerIds.push(data.user._id);
             socket.emit("playerJoined", queue);
@@ -82,6 +91,11 @@ io.on("connection", (socket) => {
         console.log(data, "HEY WTF");
         // re-enable the "duplicate check"
         // if (!queue.csgo.playerIds.includes(data.user._id)){
+            queue.users.forEach((user) => {
+                if (user._id === data.user._id) {
+                    user.status = "In Queue";
+                } 
+            })
             queue.csgo.playerCount++;
             queue.csgo.playerIds.push(data.user._id);
             socket.emit("playerJoined", queue);
@@ -93,6 +107,20 @@ io.on("connection", (socket) => {
             lobby["players"] = queue.csgo.playerIds.slice(0, 10);
             socket.emit("csgoMatchFound", lobby)
         }
+    })
+
+    socket.on("checkStatus", (data) => {
+        let status = {
+            csgo: false,
+            league: false
+        }
+        if (queue.league.playerIds.includes(data.id)){
+            status.league = true;
+        }
+        if (queue.csgo.playerIds.includes(data.id)){
+            status.csgo = true;
+        }
+        socket.emit("userQueueStatus", status);
     })
 
     socket.on("SEND_MESSAGE", (data) => {

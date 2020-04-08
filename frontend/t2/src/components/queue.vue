@@ -11,8 +11,16 @@
     <div class="modal fade" id="MatchModal">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-              <button class=" btn-lg btn-success accept">Accept</button>
+          <div class="modal-header">
+            <h4 class="modal-title">
+              Match Found
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+            <div class="modal-body text-center">
+              <button class="btn-lg btn-success accept">Accept</button>
             </div>
          </div>
       </div>
@@ -33,11 +41,12 @@ export default {
       }
     },
     sockets: {
-      connect: function() {
-        console.log("socket connected :)")
-      },
-      queueStatus: function(data) {
-        console.log("Should I just use this?", data)
+      // might use this for Queue pop event
+      csgoMatchFound: function(lobby) {
+        console.log(lobby);
+
+        this.matchModal.modal("show");
+        // create a method to show the modal -- and stay open for another 10 seconds, maybe show who is readied up
       }
     },
     methods: {
@@ -54,30 +63,11 @@ export default {
         })
       },
       joinUsers() {
-        this.$socket.emit("joinUsers", this.user)
+        this.$socket.emit("joinUsers", this.userDetails)
       }
     },
     created() {
-
-      console.log("is this happening?", this.$socket)
-      // this.$socket.on("queueStatus", (data) => {
-      //   console.log("connection thing", data);
-      //   this.queue = data.queue;
-      //   // if (this.queue.league.playerIds.includes(this.userDetails._id))
-      //   //   this.leagueButton = true;
-
-      //   // if (this.queue.csgo.playerIds.includes(this.userDetails._id))
-      //   //   this.csgoButton = true;
-      // })
-      // this.$socket.on("playerJoined", (queue) => {
-      //   console.log("Triggered theirs");
-      //   this.queue = queue;
-      //   // if (this.queue.league.playerIds.includes(this.userDetails._id))
-      //   //   this.leagueButton = true;
-
-      //   // if (this.queue.csgo.playerIds.includes(this.userDetails._id))
-      //   //   this.csgoButton = true;
-      // })
+      this.joinUsers()
     },
     mounted() {
       this.matchModal = $("#MatchModal");
@@ -93,6 +83,12 @@ export default {
     computed: {
       queueData() {
         return this.$store.getters.getQueue;
+      },
+      inLeague() {
+        return this.$store.getters.getQueuedLeague(this.userDetails._id);
+      },
+      inCsgo() {
+        return this.$store.getters.getQueuedCsgo(this.userDetails._id);
       }
     }
 }
@@ -100,9 +96,7 @@ export default {
 
 <style>
 .accept {
-  position: absolute;
-  left: 50%;
-  top: 50%;
+  margin: auto;
 }
 .matchFound {
   height: 30%;

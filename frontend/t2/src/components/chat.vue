@@ -74,7 +74,8 @@ export default {
     border-style: solid;
 }
 #chatInput {
-    width: 90%
+    width: 90%;
+    padding-right: .5rem;
 }
 #send {
     float: right;
@@ -85,6 +86,9 @@ export default {
   border-radius: 5px;
   padding: 10px;
   margin: 10px 0;
+  width: 72%;
+  margin: auto;
+  margin-top: 1%;
 }
 /* Clear floats */
 .line::after {

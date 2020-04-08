@@ -6,7 +6,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     connected: false,
-    queue: {}
+    queue: {},
+    queuedLeague: false,
+    queuedCsgo: false
   },
   mutations: {
     SOCKET_CONNECT(state) {
@@ -25,6 +27,12 @@ export default new Vuex.Store({
   getters: {
     getQueue(state) {
       return state.queue
+    },
+    getQueuedLeague(state) {
+      return playerId => state.queue.league.playerIds.includes(playerId);
+    },
+    getQueuedCsgo(state) {
+      return playerId => state.queue.csgo.playerIds.includes(playerId);
     }
   },
   actions: {
