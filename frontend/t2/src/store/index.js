@@ -21,6 +21,7 @@ export default new Vuex.Store({
       state.queue = newQueue;
     },
     SOCKET_playerJoined(state, newQueue){
+      console.log("triggered :)");
       state.queue = newQueue;
     }
   },

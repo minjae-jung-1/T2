@@ -47,6 +47,9 @@ export default {
 
         this.matchModal.modal("show");
         // create a method to show the modal -- and stay open for another 10 seconds, maybe show who is readied up
+      },
+      playerJoined: function(data) {
+        
       }
     },
     methods: {
