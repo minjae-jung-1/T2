@@ -24,7 +24,6 @@
 <script>
 //TODO Multer to download people's profile pictures on the backend and serve it up via a static folder.
 
-import io from 'socket.io-client';
 export default {
   name: 'chatComp',
   data() {
@@ -32,10 +31,16 @@ export default {
           userDetails: JSON.parse(sessionStorage.getItem("userData")),
           user: 'BRAN',
           message: '',
-          messages: [],
-          socket : io('http://localhost:3000', {secure: true})
+          messages: []
       }
   },  
+  sockets: {
+    MESSAGE: function(data) {
+      console.log("is this working?")
+      let dm = {"username": data.data.username, "message": data.data.message};
+      this.messages.push(dm)
+    }
+  },
    methods: {
       sendMessage(){
         console.log(this.message.length)
@@ -45,7 +50,7 @@ export default {
             "message": this.message
           }
           this.messages.push(newMessage)
-          this.socket.emit('SEND_MESSAGE', newMessage);
+          this.$socket.emit('SEND_MESSAGE', newMessage);
           this.message = ''
         }
       },
@@ -54,10 +59,6 @@ export default {
       }
   },
   mounted() {
-      this.socket.on('MESSAGE', (data) => {
-          let dm = {"username": data.data.username, "message": data.data.message};
-          this.messages.push(dm)
-      });
   }
 }
 </script>

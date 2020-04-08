@@ -1,13 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const socket = require("socket.io");
 const port = 3000;
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const db_pass = process.env.DB_PASS;
 const url = `mongodb://chatRoyale:${db_pass}@18.221.11.205:27017`;
 const cookieParser = require("cookie-parser");
+const fs = require("fs");
+const https = require("https");
 
 // TODO configure multer like 4bran
 // TODO generate certs and setup HTTPS and serve up HTML from build folder as static pages
@@ -15,6 +16,10 @@ const cookieParser = require("cookie-parser");
 mongoose.Promise = global.Promise;
 mongoose.connect(url, {useNewUrlParser:true, useUnifiedTopology: true});
 
+var privateKey = fs.readFileSync("./certs/private.pem");
+var certificate = fs.readFileSync("./certs/public.pem");
+
+const credentials = { key: privateKey, cert: certificate }
 
 
 const app = express();
@@ -22,12 +27,12 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors({
-    "origin": ["http://localhost:8080"],
+    "origin": ["https://localhost:8080"],
     "credentials": true,
     "methods": ["GET", "POST", "OPTIONS"]
 }));
 
-const server = require("http").createServer(app);
+const server = https.createServer(credentials, app);
 
 const queue = {
     league: {
@@ -37,18 +42,32 @@ const queue = {
     csgo: {
         playerCount: 0,
         playerIds: []
-    }
+    },
+    users: []
 }
 
 
-const io = socket(server)
+
+
+
+const users = require("./routes/users");
+app.use("/api/users", users)
+
+
+server.listen(port, () => console.log(`server listening on port: ${port}`));
+
+
+const io = require("socket.io")(server)
 
 io.set("origins", "*:*")
 
 io.on("connection", (socket) => {
-    socket.emit("queueStatus", {
-        queue
-    });
+
+    socket.emit("queueStatus", queue);
+
+    socket.on("joinUsers", (data) => {
+      queue.users.push(data)  
+    })
 
     socket.on("queueLeague", (data) => {
         console.log(data);
@@ -60,7 +79,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("queueCsgo", (data) => {
-        console.log(data);
+        console.log(data, "HEY WTF");
         // re-enable the "duplicate check"
         // if (!queue.csgo.playerIds.includes(data.user._id)){
             queue.csgo.playerCount++;
@@ -83,12 +102,3 @@ io.on("connection", (socket) => {
         })
     })
 })
-
-
-const users = require("./routes/users");
-app.use("/api/users", users)
-
-
-
-
-server.listen(port, () => console.log(`server listening on port: ${port}`));
