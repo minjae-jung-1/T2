@@ -13,14 +13,14 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">
-              Match Found
+              Match Found: {{ matchCounter }}
             </h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
             <div class="modal-body text-center">
-              <button class="btn-lg btn-success accept">Accept</button>
+              <button class="btn-lg btn-success accept" @click="">Accept</button>
             </div>
          </div>
       </div>
@@ -37,7 +37,8 @@ export default {
         leagueButton: false,
         csgoButton: false,
         matchFound: false,
-        matchModal: undefined
+        matchModal: undefined,
+        matchCounter: 10
       }
     },
     sockets: {
@@ -47,9 +48,23 @@ export default {
 
         this.matchModal.modal("show");
         // create a method to show the modal -- and stay open for another 10 seconds, maybe show who is readied up
+        // start 10 second timer
+        //countdown interval
+        var matchTimer = setInterval(() => {
+          if (this.matchCounter <= 1){
+            clearInterval(matchTimer);
+          }
+          this.matchCounter--
+        }, 1000);
+
+        setTimeout(() => {
+          this.matchModal.modal("hide");
+        }, 10000)
+
+        this.matchCounter = 10;
       },
       playerJoined: function(data) {
-        
+        console.log("does this trigger work?")
       }
     },
     methods: {

@@ -70,7 +70,7 @@ io.on("connection", (socket) => {
         user.status = "Online"
         queue.users.push(user)
       }
-      socket.emit("playerJoined", queue)
+      io.emit("playerJoined", queue)
     })
 
     socket.on("queueLeague", (data) => {
@@ -83,10 +83,15 @@ io.on("connection", (socket) => {
             })
             queue.league.playerCount++;
             queue.league.playerIds.push(data.user._id);
-            socket.emit("playerJoined", queue);
+            io.emit("playerJoined", queue);
         }
     })
 
+    socket.on("JOIN_ROOM", (data) => {
+        console.log(data, "ROOM_ID");
+        socket.join(data.room);
+    })
+    // users array needs socket_id so I can directly send them the event
     socket.on("queueCsgo", (data) => {
         console.log(data, "HEY WTF");
         // re-enable the "duplicate check"
@@ -98,14 +103,18 @@ io.on("connection", (socket) => {
             })
             queue.csgo.playerCount++;
             queue.csgo.playerIds.push(data.user._id);
-            socket.emit("playerJoined", queue);
+            io.emit("playerJoined", queue);
         //}
 
         if (queue.csgo.playerCount === 10) {
             console.log("TRIG GGERERRREDDD ON BACK END ")
             let lobby = {};
             lobby["players"] = queue.csgo.playerIds.slice(0, 10);
-            socket.emit("csgoMatchFound", lobby)
+            lobby.players.forEach((playerId) => {
+                console.log(playerId);
+                console.log(lobby, "heres our lobby")
+                io.to(`${playerId}`).emit("csgoMatchFound", lobby)
+            })
         }
     })
 
@@ -120,7 +129,7 @@ io.on("connection", (socket) => {
         if (queue.csgo.playerIds.includes(data.id)){
             status.csgo = true;
         }
-        socket.emit("userQueueStatus", status);
+        io.emit("userQueueStatus", status);
     })
 
     socket.on("SEND_MESSAGE", (data) => {
