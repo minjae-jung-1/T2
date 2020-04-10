@@ -20,7 +20,7 @@
             </button>
           </div>
             <div class="modal-body text-center">
-              <button class="btn-lg btn-success accept" @click="">Accept</button>
+              <button :disabled="accepted" id="acceptButton" class="btn-lg btn-success accept" @click="acceptMatch()">Accept</button>
             </div>
          </div>
       </div>
@@ -38,18 +38,21 @@ export default {
         csgoButton: false,
         matchFound: false,
         matchModal: undefined,
-        matchCounter: 10
+        matchCounter: 10,
+        matchDetails: undefined,
+        accepted: false,
+        acceptButton: undefined,
       }
     },
     sockets: {
       // might use this for Queue pop event
       csgoMatchFound: function(lobby) {
         console.log(lobby);
-
+        this.matchDetails = lobby;
         this.matchModal.modal("show");
         // create a method to show the modal -- and stay open for another 10 seconds, maybe show who is readied up
         // start 10 second timer
-        //countdown interval
+        // countdown interval
         var matchTimer = setInterval(() => {
           if (this.matchCounter <= 1){
             clearInterval(matchTimer);
@@ -59,6 +62,7 @@ export default {
 
         setTimeout(() => {
           this.matchModal.modal("hide");
+          this.accepted = false;
         }, 10000)
 
         this.matchCounter = 10;
@@ -69,19 +73,25 @@ export default {
     },
     methods: {
       queueLeague() {
-        let user = JSON.parse(sessionStorage.getItem("userData"));
         this.$socket.emit("queueLeague", {
-          user
+          user: this.userDetails
         })
       },
       queueCsgo() {
-        let user = JSON.parse(sessionStorage.getItem("userData"));
         this.$socket.emit("queueCsgo", {
-          user
+          user: this.userDetails
         })
       },
       joinUsers() {
         this.$socket.emit("joinUsers", this.userDetails)
+      },
+      acceptMatch() {
+        this.accepted = true;
+
+        this.$socket.emit("acceptMatch", {
+          "user": this.userDetails,
+          "lobby": this.matchDetails
+          })
       }
     },
     created() {
@@ -89,7 +99,7 @@ export default {
     },
     mounted() {
       this.matchModal = $("#MatchModal");
-      console.log(typeof(this.matchModal))
+      this.acceptButton = $("#acceptButton");
       // this.$socket.on("csgoMatchFound", (lobby) => {
       //   console.log(lobby);
 

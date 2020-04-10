@@ -9,6 +9,7 @@ const url = `mongodb://chatRoyale:${db_pass}@18.221.11.205:27017`;
 const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const https = require("https");
+const uuidv4 = require("uuid/v4");
 
 // TODO configure multer like 4bran
 // TODO generate certs and setup HTTPS and serve up HTML from build folder as static pages
@@ -42,7 +43,8 @@ const queue = {
         playerCount: 0,
         playerIds: []
     },
-    users: []
+    users: [],
+    lobbies: []
 }
 
 
@@ -65,11 +67,18 @@ io.on("connection", (socket) => {
     socket.emit("queueStatus", queue);
 
     socket.on("joinUsers", (data) => {
-      if(!queue.users.find(user => user._id === data._id)) {
-        let user = data;
-        user.status = "Online"
-        queue.users.push(user)
-      }
+        console.log("Socket_id?", socket.id);
+        let foundUser = queue.users.find(user => user._id === data._id);
+        if (!foundUser) {
+            console.log("User client Id not equal?")
+            let user = data;
+            user.clientId = socket.id;
+            user.status = "Online"
+            queue.users.push(user)
+        } else {
+            // assign user new socket.id
+            foundUser.clientId = socket.id;
+        }
       io.emit("playerJoined", queue)
     })
 
@@ -91,6 +100,16 @@ io.on("connection", (socket) => {
         console.log(data, "ROOM_ID");
         socket.join(data.room);
     })
+
+    socket.on("acceptMatch", (data) => {
+        let selectedLobby = queue.lobbies.find(selectedLobby => selectedLobby._id === data.lobby._id);
+        console.log("inside my queueFunction", selectedLobby);
+
+        selectedLobby.accepted.push(data.user._id);
+        console.log("selectedLobby changes?", queue.lobbies);
+
+    });
+
     // users array needs socket_id so I can directly send them the event
     socket.on("queueCsgo", (data) => {
         console.log(data, "HEY WTF");
@@ -109,12 +128,36 @@ io.on("connection", (socket) => {
         if (queue.csgo.playerCount === 10) {
             console.log("TRIG GGERERRREDDD ON BACK END ")
             let lobby = {};
+            lobby["game"] = "csgo";
+            lobby["_id"] = uuidv4();
             lobby["players"] = queue.csgo.playerIds.slice(0, 10);
+            lobby["accepted"] = [];
+            queue.lobbies.push(lobby);
+            console.log(queue.users)
             lobby.players.forEach((playerId) => {
                 console.log(playerId);
-                console.log(lobby, "heres our lobby")
-                io.to(`${playerId}`).emit("csgoMatchFound", lobby)
+                console.log("user", queue.users[0]._id)
+                console.log(playerId === queue.users[0]._id)
+                queue.users.forEach((user) => {
+                    if (user._id === playerId) {
+                        io.to(`${user.clientId}`).emit("csgoMatchFound", lobby)
+                    }
+                })
             })
+            
+            setTimeout(() => {
+                let selectedLobby = queue.lobbies.find(selectedLobby => selectedLobby._id === lobby._id);
+                console.log("timer", selectedLobby);
+                if (lobby.players.length === selectedLobby.accepted.length) {
+                    // workflow for creating the game in mongoDb and the room for the lobby
+                    console.log("All are accepted and the game is ready");
+                } else {
+                    // accepted players !== 10
+                    let adjustedArr = removeIdlePlayers(lobby.players, selectedLobby.accepted);
+                    console.log("Users that failed to accept", adjustedArr);
+                }
+            }, 15000)
+
         }
     })
 
@@ -133,9 +176,22 @@ io.on("connection", (socket) => {
     })
 
     socket.on("SEND_MESSAGE", (data) => {
+        console.log(socket.id)
         console.log(data);
         socket.broadcast.emit("MESSAGE", {
             data
         })
     })
 })
+
+Array.prototype.diff = function(a) {
+    return this.filter(function (i){return a.indexOf(i) < 0;})
+}
+
+function removeIdlePlayers(arr1, arr2) {
+    var newArr = [];
+    
+    newArr = arr1.diff(arr2);
+    newArr = newArr.concat(arr2.diff(arr1));
+    return newArr;
+}
