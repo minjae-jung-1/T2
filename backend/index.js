@@ -152,8 +152,9 @@ io.on("connection", (socket) => {
                     // workflow for creating the game in mongoDb and the room for the lobby
                     console.log("All are accepted and the game is ready");
                 } else {
-                    // accepted players !== 10
+                    // accepted players !== 10 
                     let adjustedArr = removeIdlePlayers(lobby.players, selectedLobby.accepted);
+                    // this returns the players WHO DID NOT ACCEPT but does not return an array of the adjusted queue to remove them.
                     console.log("Users that failed to accept", adjustedArr);
                 }
             }, 15000)
