@@ -45,8 +45,7 @@ const queue = {
     },
     users: [],
     lobbies: []
-}
-
+};
 
 
 
