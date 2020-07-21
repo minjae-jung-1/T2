@@ -2,10 +2,10 @@
   <div>
     <div class="row">
       <div class="col-sm center-page text-center">
-        <button :disabled="csgoButton" @click="queueCsgo()" class="btn btn-secondary">CS <span v-if="queueData && queueData.csgo" class="badge badge-dark ml-2">{{ queueData.csgo.playerCount }}</span></button>
+        <button :disabled="csgoButton" @click="queueCsgo()" class="btn btn-secondary">CS <span v-if="queueData && queueData.csgo" class="badge badge-dark ml-2">{{ queueData.csgo.playerIds.length }}</span></button>
         </div>
         <div class="col-sm center-page text-center">
-        <button :disabled="leagueButton" @click="queueLeague()" class="btn btn-secondary">league<span v-if="queueData.league" class="badge badge-dark ml-2">{{ queueData.league.playerCount }}</span></button>
+        <button :disabled="leagueButton" @click="queueLeague()" class="btn btn-secondary">league<span v-if="queueData.league" class="badge badge-dark ml-2">{{ queueData.league.playerIds.length }}</span></button>
         </div>
     </div>
     <div class="modal fade" id="MatchModal">
@@ -45,9 +45,8 @@ export default {
       }
     },
     sockets: {
-      // might use this for Queue pop event
-      csgoMatchFound: function(lobby) {
-        console.log(lobby);
+      csgoMatchFound(lobby){
+        console.log("BRANNNNNNNNNNNNNNNNNN");
         this.matchDetails = lobby;
         this.matchModal.modal("show");
         // create a method to show the modal -- and stay open for another 10 seconds, maybe show who is readied up
@@ -66,29 +65,26 @@ export default {
         }, 10000)
 
         this.matchCounter = 10;
-      },
-      playerJoined: function(data) {
-        console.log("does this trigger work?")
       }
     },
     methods: {
       queueLeague() {
-        this.$socket.emit("queueLeague", {
+        this.$socket.client.emit("queueLeague", {
           user: this.userDetails
         })
       },
       queueCsgo() {
-        this.$socket.emit("queueCsgo", {
+        this.$socket.client.emit("queueCsgo", {
           user: this.userDetails
         })
       },
       joinUsers() {
-        this.$socket.emit("joinUsers", this.userDetails)
+        this.$socket.client.emit("joinUsers", this.userDetails)
       },
       acceptMatch() {
         this.accepted = true;
 
-        this.$socket.emit("acceptMatch", {
+        this.$socket.client.emit("acceptMatch", {
           "user": this.userDetails,
           "lobby": this.matchDetails
           })

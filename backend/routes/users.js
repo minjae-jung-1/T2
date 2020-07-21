@@ -24,22 +24,37 @@ router.route("/signin")
     .post(passport.authenticate("local", { session: false }), UsersController.signIn);
 
     //TODO REWRITE THIS :)
-router.get("/details", async (req, res) => {
-    // TODO:  Use projection instead of doing this jank ass shit
-    let userId = req.query.userId;
-    console.log(userId)
-    let selectedUser = await User.findOne({"facebook.id": userId}, (err, user) => {
-            return user.toObject();
+    router.get("/:userId", async (req, res) => {
+        let userId = req.params.userId;
+        console.log(userId)
+        let selectedUser = await User.findOne({"_id": userId}, (err, user) => {
+                return user.toObject();
+            });
+            returnValue = {...selectedUser._doc};
+            delete returnValue.password;
+            if (selectedUser)
+                res.status(200).send(returnValue);
+            else
+                res.status(404).send("User not found");
         });
-        returnValue = {};
-        returnValue["facebook_id"] = selectedUser.facebook.id;
-        returnValue["firstName"] = selectedUser.facebook.firstName;
-        returnValue["lastName"] = selectedUser.facebook.lastName;
-        returnValue["_id"] = selectedUser._id;
-        if (selectedUser)
-            res.status(200).send(returnValue);
-        else
-            res.status(404).send("User not found");
-    });
+    
+
+// router.get("/details", async (req, res) => {
+//     // TODO:  Use projection instead of doing this jank ass shit
+//     let userId = req.query.userId;
+//     console.log(userId)
+//     let selectedUser = await User.findOne({"facebook.id": userId}, (err, user) => {
+//             return user.toObject();
+//         });
+//         returnValue = {};
+//         returnValue["facebook_id"] = selectedUser.facebook.id;
+//         returnValue["firstName"] = selectedUser.facebook.firstName;
+//         returnValue["lastName"] = selectedUser.facebook.lastName;
+//         returnValue["_id"] = selectedUser._id;
+//         if (selectedUser)
+//             res.status(200).send(returnValue);
+//         else
+//             res.status(404).send("User not found");
+//     });
 
 module.exports = router;

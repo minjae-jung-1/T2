@@ -8,7 +8,8 @@ export default new Vuex.Store({
     connected: false,
     queue: {},
     queuedLeague: false,
-    queuedCsgo: false
+    queuedCsgo: false,
+    acceptMatch: false
   },
   mutations: {
     SOCKET_CONNECT(state) {
@@ -17,10 +18,10 @@ export default new Vuex.Store({
     SOCKET_DISCONNECT(state) {
       state.connected = false;
     },
-    SOCKET_queueStatus(state, newQueue) {
+    SOCKET_QUEUESTATUS(state, newQueue) {
       state.queue = newQueue;
     },
-    SOCKET_playerJoined(state, newQueue){
+    SOCKET_PLAYERJOINED(state, newQueue){
       console.log("triggered :)");
       state.queue = newQueue;
     }

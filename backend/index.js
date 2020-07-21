@@ -36,11 +36,9 @@ const server = https.createServer(credentials, app);
 
 const queue = {
     league: {
-        playerCount: 0,
         playerIds: []
     },
     csgo: {
-        playerCount: 0,
         playerIds: []
     },
     users: [],
@@ -53,6 +51,8 @@ const queue = {
 const users = require("./routes/users");
 app.use("/api/users", users)
 
+const games = require("./routes/games");
+app.use("/api/games", games)
 
 server.listen(port, () => console.log(`server listening on port: ${port}`));
 
@@ -89,7 +89,6 @@ io.on("connection", (socket) => {
                     user.status = "In Queue";
                 } 
             })
-            queue.league.playerCount++;
             queue.league.playerIds.push(data.user._id);
             io.emit("playerJoined", queue);
         }
@@ -119,12 +118,11 @@ io.on("connection", (socket) => {
                     user.status = "In Queue";
                 } 
             })
-            queue.csgo.playerCount++;
             queue.csgo.playerIds.push(data.user._id);
             io.emit("playerJoined", queue);
         //}
 
-        if (queue.csgo.playerCount === 10) {
+        if (queue.csgo.playerIds.length === 2) {
             console.log("TRIG GGERERRREDDD ON BACK END ")
             let lobby = {};
             lobby["game"] = "csgo";
@@ -150,6 +148,8 @@ io.on("connection", (socket) => {
                 if (lobby.players.length === selectedLobby.accepted.length) {
                     // workflow for creating the game in mongoDb and the room for the lobby
                     console.log("All are accepted and the game is ready");
+                    
+
                 } else {
                     // accepted players !== 10 
                     let adjustedArr = removeIdlePlayers(lobby.players, selectedLobby.accepted);

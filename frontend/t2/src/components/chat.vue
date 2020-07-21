@@ -50,7 +50,7 @@ export default {
             "message": this.message
           }
           this.messages.push(newMessage)
-          this.$socket.emit('SEND_MESSAGE', newMessage);
+          this.$socket.client.emit('SEND_MESSAGE', newMessage);
           this.message = ''
         }
       },

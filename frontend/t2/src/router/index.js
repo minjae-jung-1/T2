@@ -1,8 +1,9 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-import loginScreen from "../components/loginScreen"
-import homeScreen from "../components/homeScreen"
-
+import VueRouter from 'vue-router';
+import loginScreen from "../components/loginScreen";
+import homeScreen from "../components/homeScreen";
+import lobby from "../components/lobby";
+import profile from "../components/profile";
 Vue.use(VueRouter)
 
 const routes = [
@@ -15,6 +16,18 @@ const routes = [
     path: "/home",
     name: "Home",
     component: homeScreen
+  },
+  {
+    path: '/game/:roomID',
+    name: 'lobby',
+    props: true,
+    component: lobby
+  },
+  {
+    path: "/profile/:userId",
+    name: "profile",
+    props: true,
+    component: profile
   }
 ]
 

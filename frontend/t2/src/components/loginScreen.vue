@@ -104,7 +104,7 @@ export default {
       };
       if (data.email.includes("@")) {
         const res = await axios.post(
-          "http://localhost:3000/api/users/signup",
+          "https://localhost:3000/api/users/signup",
           data
         );
         sessionStorage.setItem("userData", JSON.stringify(res.data));

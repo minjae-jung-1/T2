@@ -7,13 +7,13 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <!--logout button? -->
   </div>
-  <div class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle text-white"  id="navbarDropdown" role="button" data-toggle="dropdown">
-          <i class="fas fa-user"/>
+  <div class="nav-item dropdown ml-auto">
+        <a class="nav-link dropdown-toggle text-dark"  id="navbarDropdown" role="button" data-toggle="dropdown">
+          <i class="fa fa-user"/>
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" @click="goProfile()"><i class="fas fa-user"/> Profile Settings</a>
-          <a class="dropdown-item" >My Timelines</a>
+          <a class="dropdown-item" @click="goMatchHistory()"><i class="fas fa-history"/> Match History</a>
           <div class="dropdown-divider"></div>
           <a @click="signOut()" class="dropdown-item"><i class="fas fa-sign-out-alt"/> Logout</a>
         </div>
@@ -23,16 +23,27 @@
 <script>
 // TODO add login logout button
 // TODO add user profile button
+import axios from "axios";
 export default {
     name: "navbar",
+    data() {
+      return {
+        
+      }
+    },
     methods: {
       goProfile() {
-        this.$router.push({path: "profile"});
+        let userDetails = JSON.parse(sessionStorage.getItem("userData"));
+        this.$router.push({path: `/profile/${userDetails._id}`, prop});
       },
       signOut() {
-         //asios.get("http://localhost:3000/api/users/signout")
+        //  asios.get("http://localhost:3000/api/users/signout")
          this.$router.push({path: "login"})
+      },
+      goMatchHistory(){
+        this.$router.push({path: "match-history"})
       }
+
     }
 }
 </script>
