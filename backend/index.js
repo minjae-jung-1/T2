@@ -10,12 +10,14 @@ const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const https = require("https");
 const uuidv4 = require("uuid/v4");
+const JWT = require("jsonwebtoken");
+
 
 // TODO configure multer like 4bran
 // TODO generate certs and setup HTTPS and serve up HTML from build folder as static pages
 
 mongoose.Promise = global.Promise;
-mongoose.connect(url, {useNewUrlParser:true, useUnifiedTopology: true});
+mongoose.connect(url, {useNewUrlParser:true, useUnifiedTopology: true, useFindAndModify: false});
 
 var privateKey = fs.readFileSync("./certs/private.pem");
 var certificate = fs.readFileSync("./certs/public.pem");
@@ -29,7 +31,7 @@ app.use(cookieParser());
 app.use(cors({
     "origin": ["https://localhost:8080"],
     "credentials": true,
-    "methods": ["GET", "POST", "OPTIONS"]
+    "methods": ["GET", "POST", "PUT", "OPTIONS"]
 }));
 
 const server = https.createServer(credentials, app);
@@ -50,6 +52,22 @@ const queue = {
 
 const users = require("./routes/users");
 app.use("/api/users", users)
+
+app.get("/api/signout", (req, res) => {
+    console.log("triggered the signout?", queue.users);
+    let userId = JWT.decode(req.cookies.token).sub;
+    console.log(userId);
+    let foundUser = queue.users.find(user => user._id === userId);
+
+    if (foundUser) {
+        res.clearCookie("token")
+        queue.users = queue.users.filter(user => user._id !== userId);
+        console.log("r u gone yet?", queue.users);
+        res.send("Signed out");
+    } else {
+        res.status(404).send("User Not Online.");
+    }  
+})
 
 const games = require("./routes/games");
 app.use("/api/games", games)

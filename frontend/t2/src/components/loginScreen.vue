@@ -105,9 +105,16 @@ export default {
       if (data.email.includes("@")) {
         const res = await axios.post(
           "https://localhost:3000/api/users/signup",
-          data
+          data,
+          {
+            withCredentials: true
+          }
         );
-        sessionStorage.setItem("userData", JSON.stringify(res.data));
+        if (res.status === 200){
+          console.log(res.data);
+          sessionStorage.setItem("userData", JSON.stringify(res.data));
+          this.$router.push("/home");
+        }
       } else {
         console.log("Incorrect Email Format");
       }

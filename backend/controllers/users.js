@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 signToken = user => {
     return JWT.sign({
         iss: "T2",
-        sub: user.id,
+        sub: user._id,
         iat: new Date().getTime(),
         exp: new Date().setDate(new Date().getDate() +1)
     }, JWT_SECRET)
@@ -15,7 +15,7 @@ signToken = user => {
 module.exports = {
     signUp: async (req, res, next) => {
         console.log("TriggeredDDD");
-        const {email, password} = req.body;
+        const {email, username, password} = req.body;
 
         const foundUser = await User.findOne({"email": email}).select("username email _id");
 
@@ -28,13 +28,16 @@ module.exports = {
 
         const newUser = new User({
             email,
+            username,
             password
-        })
+        }).select("email _id username")
 
         await newUser.save();
+
+        console.log(newUser);
         
         const token = signToken(newUser);
-        res.cookie("token", token).send(newUser);
+        res.cookie("token", token).send(newUser.toObject());
 
     },
     signIn: async (req, res, next) => {
@@ -48,9 +51,8 @@ module.exports = {
         const token = signToken(req.user);
         res.cookie("token", token).send("successful")
     },
-
     secret: async (req, res, next) => {
-        console.log("I managed to get here");
+        console.log("Can I use this for auth?");
         res.json({
             secret: "resource"
         })

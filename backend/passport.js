@@ -6,7 +6,7 @@ const JWT_SECRET = "minjaegamer"
 const User = require("./models/user");
 const LocalStrategy = require("passport-local").Strategy;
 
-//JSON WEB TOKEN STRATEGY
+// JSON WEB TOKEN STRATEGY
 // passport.use(new JwtStrategy({
 //     jwtFromRequest: ExtractJwt.fromHeader("authorization"),
 //     secretOrKey: JWT_SECRET
@@ -26,7 +26,7 @@ const LocalStrategy = require("passport-local").Strategy;
 //     } catch(error) {
 //         done(error, false)
 //     }
-// }))
+// }));
 
 //
 passport.use(new LocalStrategy({

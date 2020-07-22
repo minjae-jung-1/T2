@@ -15,7 +15,7 @@
           <a class="dropdown-item" @click="goProfile()"><i class="fas fa-user"/> Profile Settings</a>
           <a class="dropdown-item" @click="goMatchHistory()"><i class="fas fa-history"/> Match History</a>
           <div class="dropdown-divider"></div>
-          <a @click="signOut()" class="dropdown-item"><i class="fas fa-sign-out-alt"/> Logout</a>
+          <a @click="signOut" class="dropdown-item"><i class="fas fa-sign-out-alt"/> Logout</a>
         </div>
       </div>
 </nav>
@@ -34,11 +34,12 @@ export default {
     methods: {
       goProfile() {
         let userDetails = JSON.parse(sessionStorage.getItem("userData"));
-        this.$router.push({path: `/profile/${userDetails._id}`, prop});
+        this.$router.push({path: `/profile/${userDetails._id}`, params: {userId: userDetails._id}});
       },
       signOut() {
-        //  asios.get("http://localhost:3000/api/users/signout")
-         this.$router.push({path: "login"})
+        sessionStorage.clear();
+        axios.get("https://localhost:3000/api/signout")
+         this.$router.push({path: "/"})
       },
       goMatchHistory(){
         this.$router.push({path: "match-history"})

@@ -13,6 +13,20 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    csgo: {
+        type: Schema.Types.Mixed,
+        default: {
+            rank: "s1",
+            role: "awp"
+        }
+    },
+    league: {
+        type: Schema.Types.Mixed,
+        default: {
+            rank: "g1",
+            role: "jg"
+        }
     }
 });
 
