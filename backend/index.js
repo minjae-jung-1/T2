@@ -11,40 +11,7 @@ const fs = require("fs");
 const https = require("https");
 const uuidv4 = require("uuid/v4");
 const JWT = require("jsonwebtoken");
-const AWS = require("aws-sdk");
-const multer = require("multer");
-const multerS3 = require("multer-s3")
 
-AWS.config.update({
-    secretAccessKey: process.env.aws_secret_access_key,
-    accessKeyId: process.env.aws_access_key_id,
-    region: "us-east-1"
-})
-
-const s3 = new AWS.S3();
-
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png"){
-        cb(null, true);
-    } else {
-        cb(new Error('Invalid filetype only JPEG and PNG allowed!'), false);
-    }
-}
-
-const upload = multer({
-    fileFilter,
-    storage: multerS3({
-      acl: 'public-read',
-      s3,
-      bucket: 'tenmen2',
-      metadata: function (req, file, cb) {
-        cb(null, {fieldName: 'TESTING_METADATA'});
-      },
-      key: function (req, file, cb) {
-        cb(null, Date.now().toString())
-      }
-    })
-  });
 // https://github.com/Jerga99/bwm-ng/blob/master/server/routes/image-upload.js 
 // good example how to break up the functionality of the image upload in conjunction with S3
 // TODO configure multer like 4bran
@@ -81,9 +48,6 @@ const queue = {
     lobbies: []
 };
 
-
-
-
 const users = require("./routes/users");
 app.use("/api/users", users)
 
@@ -105,6 +69,9 @@ app.get("/api/signout", (req, res) => {
 
 const games = require("./routes/games");
 app.use("/api/games", games)
+
+const images = require("./routes/image");
+app.use("/api/images", images);
 
 server.listen(port, () => console.log(`server listening on port: ${port}`));
 
