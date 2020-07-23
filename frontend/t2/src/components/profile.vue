@@ -1,7 +1,13 @@
 <template>
     <div class="container mt-5">
         <div class="row justify-content-center">
-          <div class="imgContainer"  @click="$refs.fileInput.click()">
+          <div v-if="userId === userDetails._id" class="imgContainer" @click="$refs.fileInput.click()">
+            <img :src="user.avi" class="profile__image"/>
+            <div class="middle">
+                <div class="text">Change Avi</div>
+            </div>
+          </div>
+          <div v-else class="imgContainer2">
             <img :src="user.avi" class="profile__image"/>
             <div class="middle">
                 <div class="text">Change Avi</div>
@@ -79,6 +85,7 @@ export default {
     props: ["userId"],
     data() {
         return {
+            userDetails: JSON.parse(sessionStorage.getItem("userData")),
             image: undefined,
             user: {
                 csgo: {
@@ -310,7 +317,9 @@ export default {
             console.log("im so fkin triggered rn");
             await axios.post("https://localhost:3000/api/images/image-upload", fd)
                 .then(res => {
-                    console.log(res)
+                    location.reload();
+                    if (res.status === 200)
+                        this.$router.push({path: `/profile/${this.userDetails._id}`, params: {userId: userDetails._id}});
                 });
         }
     },

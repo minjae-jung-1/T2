@@ -30,14 +30,15 @@ module.exports = {
             email,
             username,
             password
-        }).select("email _id username")
+        })
 
         await newUser.save();
 
-        console.log(newUser);
+        let createdUser = await newUser.toObject();
+        delete createdUser.password
         
-        const token = signToken(newUser);
-        res.cookie("token", token).send(newUser.toObject());
+        const token = signToken(createdUser);
+        res.cookie("token", token).send(createdUser);
 
     },
     signIn: async (req, res, next) => {

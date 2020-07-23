@@ -5,8 +5,9 @@
 
         <div id="chat">
         <div v-for="(msg, index) in messages" :key="index">
-            <div class="line" >
-            <div>{{msg.username}}:  {{msg.message}} </div>
+            <div class="line">
+              <img :src="msg.userAvi" alt="Avatar"/>
+              <div>{{msg.username}}:  {{msg.message}} </div>
             </div>
         </div>
     </div>
@@ -37,7 +38,7 @@ export default {
   sockets: {
     MESSAGE: function(data) {
       console.log("is this working?")
-      let dm = {"username": data.data.username, "message": data.data.message};
+      let dm = {"username": data.data.username, "message": data.data.message, "userAvi": data.data.userAvi};
       this.messages.push(dm)
     }
   },
@@ -47,7 +48,8 @@ export default {
         if(this.message.replace(/\s/g, '').length) {
           let newMessage = {
             "username": this.userDetails.username,
-            "message": this.message
+            "message": this.message,
+            "userAvi": this.userDetails.avi
           }
           this.messages.push(newMessage)
           this.$socket.client.emit('SEND_MESSAGE', newMessage);

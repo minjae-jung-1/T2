@@ -2,6 +2,9 @@ const Game = require("../models/game");
 
 
 module.exports = {
+    fetchMatch: async (req, res, next) => {
+        
+    },
     signUp: async (req, res, next) => {
         console.log("TriggeredDDD");
         const {email, password} = req.body;
