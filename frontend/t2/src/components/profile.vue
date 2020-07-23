@@ -1,5 +1,20 @@
 <template>
     <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="imgContainer"  @click="$refs.fileInput.click()">
+            <img :src="user.avi" class="profile__image"/>
+            <div class="middle">
+                <div class="text">Change Avi</div>
+            </div>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                  <form enctype="multipart/form-data">
+                    <input class="d-none" @change="onFileSelected" type="file" ref="fileInput"/>
+                  </form>
+            </div>
+        </div>
       <div class="row justify-content-center">
         <div class="form-group col-4">
             <label class="jcomponent-label" for="input-username">Username</label>
@@ -64,6 +79,7 @@ export default {
     props: ["userId"],
     data() {
         return {
+            image: undefined,
             user: {
                 csgo: {
                     rank: "s1",
@@ -284,6 +300,18 @@ export default {
             axios.put(`https://localhost:3000/api/users/${this.userId}`,
                 { payload }
             );
+        },
+        async onFileSelected(event) {
+            console.log(event.target.files[0]);
+            this.image = event.target.files[0];
+
+            const fd = new FormData();
+            fd.append("image", this.image, this.image.name);
+            console.log("im so fkin triggered rn");
+            await axios.post("https://localhost:3000/api/images/image-upload", fd)
+                .then(res => {
+                    console.log(res)
+                });
         }
     },
     mounted() {
@@ -295,5 +323,42 @@ export default {
 </script>
 
 <style>
+.profile__image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 auto 20px auto;
+}
 
+.imgContainer:hover .profile__image {
+    cursor: pointer;
+    opacity: 0.3;
+}
+
+.imgContainer:hover .middle {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.imgContainer {
+  position: relative;
+}
+
+.middle {
+  transition: .2s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+.text {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: black;
+  font-size: 20px;
+  padding: 16px 32px;
+}
 </style>

@@ -9,7 +9,10 @@ const userSchema = new Schema({
         unique: true,
         lowercase: true
     },
-    username: String,
+    username:{
+        type: String,
+        required: true
+    },
     password: {
         type: String,
         required: true
@@ -27,6 +30,10 @@ const userSchema = new Schema({
             rank: "g1",
             role: "jg"
         }
+    },
+    avi: {
+        type: String,
+        default: "https://tenmen2.s3.amazonaws.com/1595450217274"
     }
 });
 
