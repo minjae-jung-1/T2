@@ -317,9 +317,13 @@ export default {
             console.log("im so fkin triggered rn");
             await axios.post("https://localhost:3000/api/images/image-upload", fd)
                 .then(res => {
+                    console.log(res.data);
+                    if (res.status === 200){
+                        this.userDetails.avi = res.data.imageUrl;
+                        sessionStorage.setItem("userData", JSON.stringify(this.userDetails));
+                    }
                     location.reload();
-                    if (res.status === 200)
-                        this.$router.push({path: `/profile/${this.userDetails._id}`, params: {userId: userDetails._id}});
+
                 });
         }
     },

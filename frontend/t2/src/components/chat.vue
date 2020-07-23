@@ -6,8 +6,8 @@
         <div id="chat">
         <div v-for="(msg, index) in messages" :key="index">
             <div class="line">
-              <img :src="msg.userAvi" alt="Avatar"/>
-              <div>{{msg.username}}:  {{msg.message}} </div>
+                <img :src="msg.userAvi" alt="Avatar"/>
+                <div>{{msg.username}}:  {{msg.message}} </div>
             </div>
         </div>
     </div>
@@ -92,6 +92,20 @@ export default {
   margin: auto;
   margin-top: 1%;
 }
+/* .imgLandscape {
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+}
+.imgLandscape img {
+  width: 100%;
+  height: 100%;
+  float: left;
+  margin-right: 20px;
+} */
+
 /* Clear floats */
 .line::after {
   content: "";
@@ -103,9 +117,13 @@ export default {
   float: left;
   max-width: 60px;
   width: 100%;
+  height: 60px;
   margin-right: 20px;
   border-radius: 50%;
-}
+  max-height: 60px;
+  overflow: hidden;
+  width: auto;
+} 
 /* Style the right image */
 .line img.right {
   float: right;

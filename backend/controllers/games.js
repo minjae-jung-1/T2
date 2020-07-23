@@ -2,8 +2,13 @@ const Game = require("../models/game");
 
 
 module.exports = {
-    fetchMatch: async (req, res, next) => {
-        
+    createMatch: async (req, res, next) => {
+        console.log("match formation", req.body);
+
+        // const newMatch = new Game({
+
+        // })
+        res.send("Match is being created");
     },
     signUp: async (req, res, next) => {
         console.log("TriggeredDDD");
