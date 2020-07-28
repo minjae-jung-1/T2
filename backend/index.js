@@ -12,6 +12,7 @@ const https = require("https");
 const uuidv4 = require("uuid/v4");
 const JWT = require("jsonwebtoken");
 const Game = require("./models/game");
+const User = require("./models/user");
 
 
 // https://github.com/Jerga99/bwm-ng/blob/master/server/routes/image-upload.js 
@@ -148,14 +149,19 @@ io.on("connection", (socket) => {
                     captain: selectedLobby.players[0],
                     players: []
                 };
-                if (selectedLobby.players.length !== 10)
-                    lobby.team1.players.push(selectedLobby.players[0])
+                if (selectedLobby.players.length !== 10){
+                    let playerObj = await User.findById(selectedLobby.players[0]).select("league avi _id username").lean();
+                    lobby.team2.players.push(playerObj);
+                }
+                    
                 lobby["team2"] = { 
                     captain: selectedLobby.players[1],
                     players: []
                 };
-                if (selectedLobby.players.length !== 10)
-                    lobby.team2.players.push(selectedLobby.players[1])
+                if (selectedLobby.players.length !== 10){
+                    let playerObj = await User.findById(selectedLobby.players[1]).select("league avi _id username").lean();
+                    lobby.team2.players.push(playerObj);
+                }
                 
 
                 let new_lobby = await new Game(lobby).save();

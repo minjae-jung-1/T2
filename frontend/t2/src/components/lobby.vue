@@ -7,8 +7,8 @@
             </th>
             <tbody v-for="(player, index) in lobby.team1.players" :key="index">
                 <tr>
-                    <td>
-                        {{player}}
+                    <td class="line"><img :src="player.avi"/>
+                        {{player.username}}
                     </td>
                 </tr>
             </tbody>
@@ -19,8 +19,8 @@
             </th>
             <tbody v-for="(player, index) in lobby.team2.players" :key="index">
                 <tr>
-                    <td>
-                        {{player}}
+                    <td class="line"><img :src="player.avi"/>
+                        {{player.username}}
                     </td>
                 </tr>
             </tbody>
@@ -66,6 +66,16 @@ export default {
 
 
 <style lang="scss" scoped>
-
+.line img {
+  float: left;
+  max-width: 60px;
+  width: 100%;
+  height: 60px;
+  margin-right: 20px;
+  border-radius: 50%;
+  max-height: 60px;
+  overflow: hidden;
+  width: auto;
+} 
 
 </style>
