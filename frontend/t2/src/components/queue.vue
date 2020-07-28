@@ -65,6 +65,32 @@ export default {
         }, 10000)
 
         this.matchCounter = 10;
+      },
+      leagueMatchFound(lobby){
+        console.log("Leaguein!!")
+
+        this.matchDetails = lobby;
+        this.matchModal.modal("show");
+        // create a method to show the modal -- and stay open for another 10 seconds, maybe show who is readied up
+        // start 10 second timer
+        // countdown interval
+        var matchTimer = setInterval(() => {
+          if (this.matchCounter <= 1){
+            clearInterval(matchTimer);
+          }
+          this.matchCounter--
+        }, 1000);
+
+        setTimeout(() => {
+          this.matchModal.modal("hide");
+          this.accepted = false;
+        }, 10000)
+
+        this.matchCounter = 10;
+      },
+      leagueGameCreated(lobby) {
+        console.log("db_lobby", lobby);
+        this.$router.push({path: `/lobby/${lobby._id}`, params: {lobbyId: lobby._id}})
       }
     },
     methods: {

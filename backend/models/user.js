@@ -21,14 +21,16 @@ const userSchema = new Schema({
         type: Schema.Types.Mixed,
         default: {
             rank: "s1",
-            role: "awp"
+            role: "awp",
+            username: ""
         }
     },
     league: {
         type: Schema.Types.Mixed,
         default: {
             rank: "g1",
-            role: "jg"
+            role: "jg",
+            username: ""
         }
     },
     avi: {

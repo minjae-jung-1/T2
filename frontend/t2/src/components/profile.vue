@@ -24,7 +24,7 @@
       <div class="row justify-content-center">
         <div class="form-group col-4">
             <label class="jcomponent-label" for="input-username">Username</label>
-            <input id="input-username" class="form-control jcomponent-input" @change="updateUser('username', user.username)" v-model="user.username" type="text" aria-describedby="small-username" autocomplete="off"/>
+            <input id="input-username" disabled class="form-control jcomponent-input" @change="updateUser('username', user.username)" v-model="user.username" type="text" aria-describedby="small-username" autocomplete="off"/>
             <small class="form-text text-muted jcomponent-small small-username"></small>
         </div>
         <div class="form-group col-4">
@@ -34,6 +34,11 @@
         </div>
       </div>
       <div class="row justify-content-center">
+           <div class="form-group col-4">
+            <label class="jcomponent-label" for="input-lolusername">Username (League)</label>
+            <input id="input-lolusername" class="form-control jcomponent-input" @change="updateUserLeague(user.league.username)" v-model="user.league.username" type="text" aria-describedby="small-username" autocomplete="off"/>
+            <small class="form-text text-muted jcomponent-small small-username"> Must be case sensitive</small>
+        </div>
           <div class="form-group col-4">
             <label class="jcomponent-label" for="${options.type}-input-${options.id}">Preferred Role (League)</label>
             <select v-model="user.league.role" @change="updateUser('league', user.league)" class="custom-select jcomponent-input ${options.type}-input" aria-describedby="${options.type}-small-${options.id}">
@@ -50,6 +55,11 @@
         </div>
       </div>
       <div class="row justify-content-center">
+           <div class="form-group col-4">
+            <label class="jcomponent-label" for="input-steamusername">Username (Steam)</label>
+            <input id="input-steamusername" class="form-control jcomponent-input" disabled @change="" v-model="user.csgo.username" type="text" aria-describedby="small-username" autocomplete="off"/>
+            <small class="form-text text-muted jcomponent-small small-username"> Must be case Sensitive</small>
+        </div>
           <div class="form-group col-4">
             <label class="jcomponent-label" for="${options.type}-input-${options.id}">Preferred Role (CSGO)</label>
             <select v-model="user.csgo.role" @change="updateUser('csgo', user.csgo)" class="custom-select jcomponent-input ${options.type}-input" aria-describedby="${options.type}-small-${options.id}">
@@ -89,10 +99,12 @@ export default {
             image: undefined,
             user: {
                 csgo: {
+                    username: "",
                     rank: "s1",
                     role: "awp"
                 },
                 league: {
+                    username: "",
                     role: "jungle",
                     rank: "s4"
                 }
@@ -307,6 +319,18 @@ export default {
             axios.put(`https://localhost:3000/api/users/${this.userId}`,
                 { payload }
             );
+        },
+        async updateUserLeague(username) {
+            let payload = { username }
+
+            axios.put(`https://localhost:3000/api/users/${this.userId}/league`, payload)
+            .then(res => {
+                console.log(res);
+                if (res.status === 200) {
+                    this.user.league.rank = res.data.rank;
+                    this.user.league.username = res.data.username;
+                }
+            })
         },
         async onFileSelected(event) {
             console.log(event.target.files[0]);

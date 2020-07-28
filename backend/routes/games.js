@@ -5,7 +5,12 @@ const GamesController = require("../controllers/games");
 
 const router = express.Router();
 
-router.route("/create")
-    .post(GamesController.createMatch);
+router.get("/:gameId", async (req, res) => {
+    let gameId = req.params.gameId;
+    console.log(gameId);
+
+    const selectedGame = await Game.findById(gameId).lean();
+    res.send(selectedGame);
+})
 
 module.exports = router;

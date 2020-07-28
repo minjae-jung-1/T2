@@ -18,7 +18,7 @@ const routes = [
     component: homeScreen
   },
   {
-    path: '/game/:roomID',
+    path: '/lobby/:lobbyId',
     name: 'lobby',
     props: true,
     component: lobby

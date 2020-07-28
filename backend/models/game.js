@@ -25,7 +25,7 @@ const gameSchema = new Schema({
         type: Schema.Types.Mixed
     },
     winner: {
-        default: undefined
+        default: ""
     },
     map: {
         required: true,

@@ -5,12 +5,14 @@ const port = 3000;
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const db_pass = process.env.DB_PASS;
-const url = `mongodb://chatRoyale:${db_pass}@18.221.11.205:27017`;
+const url = `mongodb://chatRoyale:${db_pass}@3.129.115.115:27017`;
 const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const https = require("https");
 const uuidv4 = require("uuid/v4");
 const JWT = require("jsonwebtoken");
+const Game = require("./models/game");
+
 
 // https://github.com/Jerga99/bwm-ng/blob/master/server/routes/image-upload.js 
 // good example how to break up the functionality of the image upload in conjunction with S3
@@ -68,7 +70,7 @@ app.get("/api/signout", (req, res) => {
 })
 
 const games = require("./routes/games");
-app.use("/api/games", games)
+app.use("/api/games", games);
 
 const images = require("./routes/image");
 app.use("/api/images", images);
@@ -102,15 +104,95 @@ io.on("connection", (socket) => {
 
     socket.on("queueLeague", (data) => {
         console.log(data);
-        if (!queue.league.playerIds.includes(data.user._id)) {
+
+        queue.users.forEach((user) => {
+            if (user._id === data.user._id) {
+                user.status = "In Queue";
+            } 
+        })
+        queue.league.playerIds.push(data.user._id);
+        io.emit("playerJoined", queue);
+    //}
+
+    if (queue.league.playerIds.length === 2) {
+        console.log("TRIG GGERERRREDDD ON BACK END ")
+        let lobby = {};
+        lobby["game"] = "league";
+        lobby["players"] = queue.league.playerIds.slice(0, 10);
+        lobby["accepted"] = [];
+        lobby["map"] = "Summoner's Rift";
+        lobby["gameType"] = "Tournament Draft";
+
+        queue.lobbies.push(lobby);
+        console.log(queue.users)
+        lobby.players.forEach((playerId) => {
+            console.log(playerId);
+            console.log("user", queue.users[0]._id)
+            console.log(playerId === queue.users[0]._id)
             queue.users.forEach((user) => {
-                if (user._id === data.user._id) {
-                    user.status = "In Queue";
-                } 
+                if (user._id === playerId) {
+                    io.to(`${user.clientId}`).emit("leagueMatchFound", lobby)
+                }
             })
-            queue.league.playerIds.push(data.user._id);
-            io.emit("playerJoined", queue);
-        }
+        })
+        
+        setTimeout(async () => {
+            let selectedLobby = queue.lobbies.find(selectedLobby => selectedLobby._id === lobby._id);
+            console.log("timer", selectedLobby.players);
+            if (lobby.players.length === selectedLobby.accepted.length || true) {
+                // workflow for creating the game in mongoDb and the room for the lobby
+                console.log("All are accepted and the game is ready");
+                console.log(selectedLobby.players);
+                // console.log(selectedLobby);
+                lobby["team1"] = { 
+                    captain: selectedLobby.players[0],
+                    players: []
+                };
+                if (selectedLobby.players.length !== 10)
+                    lobby.team1.players.push(selectedLobby.players[0])
+                lobby["team2"] = { 
+                    captain: selectedLobby.players[1],
+                    players: []
+                };
+                if (selectedLobby.players.length !== 10)
+                    lobby.team2.players.push(selectedLobby.players[1])
+                
+
+                let new_lobby = await new Game(lobby).save();
+                
+                let db_lobby = await new_lobby.toObject();
+
+                db_lobby.players.forEach(player => {
+                    queue.users.forEach((user) => {
+                        if (user._id === player) {
+                            io.to(`${user.clientId}`).emit("leagueGameCreated", db_lobby);
+                        }
+                    })
+                });
+
+                console.log(db_lobby._id);
+                
+
+            } else {
+                // accepted players !== 10 
+                let adjustedArr = removeIdlePlayers(lobby.players, selectedLobby.accepted);
+                // this returns the players WHO DID NOT ACCEPT but does not return an array of the adjusted queue to remove them.
+                console.log("Users that failed to accept", adjustedArr);
+            }
+        }, 15000)
+
+    }
+
+        // original code
+        // if (!queue.league.playerIds.includes(data.user._id)) {
+        //     queue.users.forEach((user) => {
+        //         if (user._id === data.user._id) {
+        //             user.status = "In Queue";
+        //         } 
+        //     })
+        //     queue.league.playerIds.push(data.user._id);
+        //     io.emit("playerJoined", queue);
+        // }
     })
 
     socket.on("JOIN_ROOM", (data) => {
@@ -167,6 +249,8 @@ io.on("connection", (socket) => {
                 if (lobby.players.length === selectedLobby.accepted.length) {
                     // workflow for creating the game in mongoDb and the room for the lobby
                     console.log("All are accepted and the game is ready");
+                    
+                    
                     
 
                 } else {

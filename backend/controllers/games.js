@@ -4,7 +4,7 @@ const Game = require("../models/game");
 module.exports = {
     createMatch: async (req, res, next) => {
         console.log("match formation", req.body);
-
+        
         // const newMatch = new Game({
 
         // })
