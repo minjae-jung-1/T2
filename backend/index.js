@@ -150,8 +150,8 @@ io.on("connection", (socket) => {
                     players: []
                 };
                 if (selectedLobby.players.length !== 10){
-                    let playerObj = await User.findById(selectedLobby.players[0]).select("league avi _id username").lean();
-                    lobby.team2.players.push(playerObj);
+                    let playerObj1 = await User.findById(selectedLobby.players[0]).select("league avi _id username").lean();
+                    lobby.team1.players.push(playerObj1);
                 }
                     
                 lobby["team2"] = { 
@@ -159,8 +159,8 @@ io.on("connection", (socket) => {
                     players: []
                 };
                 if (selectedLobby.players.length !== 10){
-                    let playerObj = await User.findById(selectedLobby.players[1]).select("league avi _id username").lean();
-                    lobby.team2.players.push(playerObj);
+                    let playerObj2 = await User.findById(selectedLobby.players[1]).select("league avi _id username").lean();
+                    lobby.team2.players.push(playerObj2);
                 }
                 
 
