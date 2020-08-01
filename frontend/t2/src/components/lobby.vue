@@ -1,30 +1,38 @@
 <template>
-  <div>
-    <div id="scrim-container">
-        <table class="col-xs-6">
+  <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-6">
+        <table class="table table-hover table-bordered">
+            <thead>
             <th>
-                <td>Team 1</td>
+                <tr>Team 1</tr>
             </th>
+            </thead>
             <tbody v-for="(player, index) in lobby.team1.players" :key="index">
                 <tr>
-                    <td class="line"><img :src="player.avi"/>
+                    <td class="bran"><img :src="player.avi"/>
                         {{player.username}}
                     </td>
                 </tr>
             </tbody>
         </table>
-        <table class="col-xs-6">
+        </div>
+        <div class="col-6">
+        <table class="table table-hover table-bordered">
+            <thead>
             <th>
-                <td>Team 2</td>
+                <tr>Team 2</tr>
             </th>
+            </thead>
             <tbody v-for="(player, index) in lobby.team2.players" :key="index">
                 <tr>
-                    <td class="line"><img :src="player.avi"/>
+                    <td class="bran"><img :src="player.avi"/>
                         {{player.username}}
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
     </div>
   </div>
 </template>
@@ -66,7 +74,7 @@ export default {
 
 
 <style lang="scss" scoped>
-.line img {
+.bran img {
   float: left;
   max-width: 60px;
   width: 100%;
@@ -76,6 +84,6 @@ export default {
   max-height: 60px;
   overflow: hidden;
   width: auto;
-} 
+}
 
 </style>
